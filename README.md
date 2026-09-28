@@ -79,7 +79,6 @@ lib_deps =
     https://github.com/professorThiago/Botao
 ```
 
-Para atualizar para a versão mais recente: `pio pkg update`.
 
 ### Arduino IDE
 
