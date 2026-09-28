@@ -51,7 +51,7 @@
  * @endcode
  *
  * @author  professorThiago (https://github.com/professorThiago)
- * @version 1.1.0
+ * @version 1.1.1
  * @date    2026
  * @license MIT
  *
