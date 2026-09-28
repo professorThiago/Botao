@@ -1,312 +1,290 @@
 /**
- * @file Botao.cpp
- * @brief Implementação da biblioteca Botao.
+ * @file Botao.h
+ * @brief Biblioteca completa para leitura de botões com debounce,
+ *        gestos e callbacks para ESP32 e Arduino.
+ *
+ * @details
+ * Substitui a Bounce2 com uma API em português, mais recursos e
+ * sem necessidade de verificar eventos manualmente em cada `loop()`.
+ *
+ * @par Recursos
+ * - Debounce em dois modos:
+ *   - `ModoDebounce::ESTAVEL`  — integrador: aceita a mudança após N ms (somados) no novo
+ *                                nível; glitches curtos não reiniciam a contagem (padrão).
+ *   - `ModoDebounce::IMEDIATO` — aceita a 1ª borda na hora e ignora oscilações por N ms
+ *                                (resposta instantânea, ideal com `loop()` lento).
+ * - Detecção de: clique simples, clique duplo, clique longo, soltura longa.
+ * - Auto-repeat: dispara repetidamente enquanto o botão está pressionado.
+ * - Callbacks: registre funções para cada evento — sem `if` no `loop()`.
+ *   No ESP32/ESP8266/RP2040 aceita lambdas com captura (`std::function`).
+ * - Contador de cliques acumulados.
+ * - Suporte a botão ativo em LOW (pull-up) ou HIGH (pull-down).
+ *
+ * @par Uso mínimo (polling)
+ * @code
+ * #include <Botao.h>
+ *
+ * Botao btn(5);   // GPIO 5, INPUT_PULLUP, ativo em LOW
+ *
+ * void setup() { btn.iniciar(); }
+ *
+ * void loop() {
+ *     btn.atualizar();
+ *     if (btn.clicou())      Serial.println("Clique!");
+ *     if (btn.clicouDuplo()) Serial.println("Duplo!");
+ *     if (btn.segurou())     Serial.println("Longo!");
+ * }
+ * @endcode
+ *
+ * @par Uso com callbacks
+ * @code
+ * Botao btn(5);
+ *
+ * void setup() {
+ *     btn.iniciar();
+ *     btn.aoClicar([]() { Serial.println("Clique!"); });
+ *     btn.aoClicarDuplo([]() { Serial.println("Duplo!"); });
+ *     btn.aoSegurar([]() { Serial.println("Longo!"); });
+ * }
+ *
+ * void loop() { btn.atualizar(); }
+ * @endcode
  *
  * @author  professorThiago (https://github.com/professorThiago)
  * @version 1.1.0
+ * @date    2026
  * @license MIT
+ *
+ * @par Licença MIT
+ * Copyright (c) 2026 professorThiago\n
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:\n
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.\n
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
  */
 
-#include "Botao.h"
+#ifndef BOTAO_H
+#define BOTAO_H
 
-// =============================================================================
-// Construtor e inicialização
-// =============================================================================
+#include <Arduino.h>
 
-Botao::Botao(uint8_t pino, uint8_t modoPino, uint8_t nivelAtivo)
-    : _pino(pino), _modoPino(modoPino), _nivelAtivo(nivelAtivo)
-{}
+// ---------------------------------------------------------------------------
+// Tipo de callback
+//   ESP32 / ESP8266 / RP2040 → std::function (aceita lambdas com captura)
+//   AVR e demais             → ponteiro de função (lambdas sem captura)
+// ---------------------------------------------------------------------------
+#if defined(ARDUINO_ARCH_ESP32) || defined(ARDUINO_ARCH_ESP8266) || \
+    defined(ARDUINO_ARCH_RP2040) || defined(BOTAO_USAR_STD_FUNCTION)
+  #include <functional>
+  typedef std::function<void()> CallbackBotao;
+#else
+  typedef void (*CallbackBotao)();
+#endif
 
-void Botao::iniciar()
+/**
+ * @brief Estratégia de debounce.
+ */
+enum class ModoDebounce : uint8_t
 {
-    pinMode(_pino, _modoPino);
+    ESTAVEL,   ///< Integrador: aceita após `intervaloDebounce` ms acumulados no novo nível.
+    IMEDIATO   ///< Aceita a 1ª borda na hora; ignora novas bordas por `intervaloDebounce` ms.
+};
 
-    // Estado inicial = leitura atual → nenhum evento falso na partida
-    const bool     leitura = _lerBruto();
-    const uint32_t agora   = millis();
-
-    _estadoAtual     = leitura;
-    _estadoAnterior  = leitura;
-    _leituraAnterior = leitura;
-
-    _tempoMudancaBruta     = agora;
-    _tempoMudancaEstavel   = agora;
-    _tempoPressionado      = agora;
-    _tempoSolto            = agora;
-    _duracaoEstadoAnterior = 0;
-    _acumulado             = 0;
-
-    _estadoGesto     = EstadoGesto::OCIOSO;
-    _autoRepeatAtivo = false;
-
-    _flagPressionou = _flagSoltou = _flagClique = _flagCliqueDuplo =
-    _flagSegurou = _flagSoltouLongo = _flagAutoRepeat = false;
-}
-
-// =============================================================================
-// Configuração
-// =============================================================================
-
-void Botao::intervaloDebounce(uint16_t ms)     { _msDebounce    = ms; }
-void Botao::modoDebounce(ModoDebounce modo)    { _modoDebounce  = modo; }
-void Botao::intervaloCliqueDuplo(uint16_t ms)  { _msCliqueDuplo = ms; }
-void Botao::habilitarCliqueDuplo(bool h)       { _cliqueDuploHabilitado = h; }
-void Botao::tempoCliqueLongo(uint16_t ms)      { _msCliqueLongo = ms; }
-
-void Botao::configurarAutoRepeat(uint16_t delayMs, uint16_t intervaloMs)
+/**
+ * @brief Gerencia um botão físico com debounce, gestos e callbacks.
+ */
+class Botao
 {
-    _msAutoRepeatDelay    = delayMs;
-    _msAutoRepeatIntv     = intervaloMs;
-    _autoRepeatHabilitado = true;
-}
+public:
+    // -----------------------------------------------------------------------
+    // Construtor e inicialização
+    // -----------------------------------------------------------------------
 
-void Botao::desabilitarAutoRepeat()
-{
-    _autoRepeatHabilitado = false;
-    _autoRepeatAtivo      = false;
-}
+    /**
+     * @brief Cria um objeto Botao.
+     *
+     * @param pino         GPIO conectado ao botão.
+     * @param modoPino     `INPUT_PULLUP` (padrão), `INPUT` ou `INPUT_PULLDOWN`.
+     * @param nivelAtivo   Nível lógico com o botão pressionado.
+     *                     `LOW` para pull-up (padrão), `HIGH` para pull-down.
+     */
+    explicit Botao(uint8_t pino,
+                   uint8_t modoPino   = INPUT_PULLUP,
+                   uint8_t nivelAtivo = LOW);
 
-// =============================================================================
-// Callbacks
-// =============================================================================
+    /** @brief Configura o pino e inicializa o estado interno. Chamar no `setup()`. */
+    void iniciar();
 
-void Botao::aoPressionar (CallbackBotao cb) { _cbPressionar  = cb; }
-void Botao::aoSoltar     (CallbackBotao cb) { _cbSoltar      = cb; }
-void Botao::aoClicar     (CallbackBotao cb) { _cbClicar      = cb; }
-void Botao::aoClicarDuplo(CallbackBotao cb) { _cbCliqueDuplo = cb; }
-void Botao::aoSegurar    (CallbackBotao cb) { _cbSegurar     = cb; }
-void Botao::aoSoltarLongo(CallbackBotao cb) { _cbSoltarLongo = cb; }
+    /**
+     * @brief Lê o pino, aplica debounce e processa todos os eventos.
+     *
+     * Deve ser chamado **uma vez em todo `loop()`**, o mais frequentemente
+     * possível. Evite `delay()` no `loop()`: um toque mais curto que o
+     * intervalo entre duas chamadas pode passar despercebido.
+     */
+    void atualizar();
 
-void Botao::aoAutoRepeat(CallbackBotao cb)
-{
-    _cbAutoRepeat = cb;
-    if (cb) _autoRepeatHabilitado = true;
-}
+    // -----------------------------------------------------------------------
+    // Configuração
+    // -----------------------------------------------------------------------
 
-// =============================================================================
-// Polling
-// =============================================================================
+    /** @brief Intervalo de debounce em ms (padrão: 25). */
+    void intervaloDebounce(uint16_t ms);
 
-bool Botao::_consumir(bool& flag)
-{
-    if (!flag) return false;
-    flag = false;
-    return true;
-}
+    /** @brief Estratégia de debounce (padrão: `ModoDebounce::ESTAVEL`). */
+    void modoDebounce(ModoDebounce modo);
 
-bool Botao::pressionou()  { return _consumir(_flagPressionou);  }
-bool Botao::soltou()      { return _consumir(_flagSoltou);      }
-bool Botao::clicou()      { return _consumir(_flagClique);      }
-bool Botao::clicouDuplo() { return _consumir(_flagCliqueDuplo); }
-bool Botao::segurou()     { return _consumir(_flagSegurou);     }
-bool Botao::soltouLongo() { return _consumir(_flagSoltouLongo); }
-bool Botao::autoRepetiu() { return _consumir(_flagAutoRepeat);  }
+    /** @brief Tempo máximo entre dois cliques para ser duplo, em ms (padrão: 400). */
+    void intervaloCliqueDuplo(uint16_t ms);
 
-// =============================================================================
-// Estado atual
-// =============================================================================
+    /**
+     * @brief Liga/desliga a detecção de clique duplo (padrão: ligada).
+     *
+     * Com a detecção ligada, `clicou()` só dispara `intervaloCliqueDuplo` ms
+     * após soltar (é preciso esperar para saber se virá um 2º clique).
+     * Desligue se não usa clique duplo: o clique simples passa a ser imediato.
+     */
+    void habilitarCliqueDuplo(bool habilitar);
 
-bool     Botao::estaPressionado()       const { return _estadoAtual; }
-bool     Botao::mudouEstado()           const { return _estadoAtual != _estadoAnterior; }
-uint32_t Botao::tempoNoEstadoAtual()    const { return millis() - _tempoMudancaEstavel; }
-uint32_t Botao::tempoNoEstadoAnterior() const { return _duracaoEstadoAnterior; }
-uint32_t Botao::totalCliques()          const { return _totalCliques; }
-void     Botao::zerarContador()               { _totalCliques = 0; }
-bool     Botao::lerPino()               const { return _lerBruto(); }
+    /** @brief Tempo mínimo pressionado para clique longo, em ms (padrão: 800). */
+    void tempoCliqueLongo(uint16_t ms);
 
-bool Botao::_lerBruto() const
-{
-    return digitalRead(_pino) == _nivelAtivo;
-}
+    /**
+     * @brief Configura e **habilita** o auto-repeat.
+     * @param delayMs     Tempo pressionado antes da 1ª repetição (padrão: 600 ms).
+     * @param intervaloMs Intervalo entre repetições (padrão: 150 ms).
+     */
+    void configurarAutoRepeat(uint16_t delayMs = 600, uint16_t intervaloMs = 150);
 
-// =============================================================================
-// Loop principal
-// =============================================================================
+    /** @brief Desabilita o auto-repeat. */
+    void desabilitarAutoRepeat();
 
-void Botao::atualizar()
-{
-    const uint32_t agora = millis();   // um único instante para todo o ciclo
-    _processarDebounce(agora);
-    _processarGestos(agora);
-    _processarAutoRepeat(agora);
-}
+    // -----------------------------------------------------------------------
+    // Callbacks
+    // -----------------------------------------------------------------------
 
-// =============================================================================
-// Debounce
-// =============================================================================
+    void aoPressionar (CallbackBotao cb); ///< Borda de pressionar (imediato após debounce).
+    void aoSoltar     (CallbackBotao cb); ///< Borda de soltar.
+    void aoClicar     (CallbackBotao cb); ///< Clique simples confirmado.
+    void aoClicarDuplo(CallbackBotao cb); ///< Clique duplo (dispara no 2º pressionar).
+    void aoSegurar    (CallbackBotao cb); ///< Atingiu `tempoCliqueLongo` ainda pressionado.
+    void aoSoltarLongo(CallbackBotao cb); ///< Soltou após clique longo.
+    void aoAutoRepeat (CallbackBotao cb); ///< Cada repetição (também habilita o auto-repeat).
 
-void Botao::_aplicarMudanca(bool novoEstado, uint32_t agora)
-{
-    _duracaoEstadoAnterior = agora - _tempoMudancaEstavel;
-    _tempoMudancaEstavel   = agora;
-    _estadoAtual           = novoEstado;
-}
+    // -----------------------------------------------------------------------
+    // Polling — retornam true uma única vez e limpam o flag
+    // -----------------------------------------------------------------------
 
-void Botao::_processarDebounce(uint32_t agora)
-{
-    // A borda (atual != anterior) deve durar exatamente UM atualizar().
-    // Na v1.0 isto só era feito após o intervalo estável — se o sinal
-    // oscilasse logo após uma borda, ela era reprocessada várias vezes.
-    _estadoAnterior = _estadoAtual;
+    bool pressionou();
+    bool soltou();
+    bool clicou();
+    bool clicouDuplo();
+    bool segurou();
+    bool soltouLongo();
+    bool autoRepetiu();
 
-    const bool leitura = _lerBruto();
+    // -----------------------------------------------------------------------
+    // Estado atual
+    // -----------------------------------------------------------------------
 
-    if (_modoDebounce == ModoDebounce::IMEDIATO)
+    /** @brief `true` enquanto o botão estiver pressionado (após debounce). */
+    bool estaPressionado() const;
+
+    /** @deprecated Use `estaPressionado()`. Mantido por compatibilidade. */
+    bool estaPresionado() const { return estaPressionado(); }
+
+    /** @brief `true` se o estado mudou no último `atualizar()`. */
+    bool mudouEstado() const;
+
+    /** @brief Tempo em ms desde a última mudança de estado (após debounce). */
+    uint32_t tempoNoEstadoAtual() const;
+
+    /** @brief Duração em ms do estado anterior (ex.: quanto tempo ficou pressionado). */
+    uint32_t tempoNoEstadoAnterior() const;
+
+    /** @brief Total de cliques (simples + duplos) desde a inicialização. */
+    uint32_t totalCliques() const;
+
+    /** @brief Zera o contador de cliques. */
+    void zerarContador();
+
+    /** @brief Nível lógico bruto do pino, sem debounce (`true` = ativo). */
+    bool lerPino() const;
+
+private:
+    enum class EstadoGesto : uint8_t
     {
-        // Aceita a primeira borda imediatamente; ignora novas bordas
-        // até passar o intervalo desde a última mudança aceita.
-        if (leitura != _estadoAtual &&
-            (agora - _tempoMudancaEstavel) >= _msDebounce)
-        {
-            _aplicarMudanca(leitura, agora);
-        }
-        _leituraAnterior = leitura;
-        return;
-    }
+        OCIOSO,
+        PRESSIONADO,
+        AGUARDANDO_SEGUNDO_CLIQUE,
+        SEGUNDO_CLIQUE,          // 2º pressionar de um duplo, aguardando soltar
+        CLIQUE_LONGO_ATIVO
+    };
 
-    // ModoDebounce::ESTAVEL — integrador por tempo.
-    //
-    // A v1.0 exigia `_msDebounce` ms SEM NENHUMA oscilação: um único glitch
-    // (ruído do pull-up interno, fio longo, relé/lâmpada chaveando por perto)
-    // zerava o timer, e o botão só era aceito depois de muito tempo — ou nunca.
-    //
-    // Aqui o tempo em que a leitura DIFERE do estado aceito é somado e o tempo
-    // em que ela CONCORDA é subtraído. Glitches curtos só descontam a própria
-    // duração, em vez de reiniciar tudo. O intervalo real entre chamadas (dt)
-    // é usado, então o debounce também funciona com `loop()` lento.
-    uint32_t dt = agora - _tempoMudancaBruta;       // tempo desde o último atualizar()
-    _tempoMudancaBruta = agora;
-    if (dt > _msDebounce) dt = _msDebounce;          // limita o peso de uma única amostra
+    // Configuração
+    uint8_t      _pino;
+    uint8_t      _modoPino;
+    uint8_t      _nivelAtivo;
+    ModoDebounce _modoDebounce        = ModoDebounce::ESTAVEL;
+    uint16_t     _msDebounce          = 25;
+    uint16_t     _msCliqueDuplo       = 400;
+    uint16_t     _msCliqueLongo       = 800;
+    uint16_t     _msAutoRepeatDelay   = 600;
+    uint16_t     _msAutoRepeatIntv    = 150;
+    bool         _cliqueDuploHabilitado = true;
+    bool         _autoRepeatHabilitado  = false;
 
-    if (leitura != _estadoAtual)
-    {
-        _acumulado += dt;
-        if (_acumulado >= _msDebounce)
-        {
-            _acumulado = 0;
-            _aplicarMudanca(leitura, agora);
-        }
-    }
-    else
-    {
-        _acumulado = (_acumulado > dt) ? (_acumulado - dt) : 0;
-    }
-    _leituraAnterior = leitura;
-}
+    // Debounce
+    bool     _estadoAtual           = false;  // true = pressionado
+    bool     _estadoAnterior        = false;
+    bool     _leituraAnterior       = false;  // última leitura bruta
+    uint32_t _tempoMudancaBruta     = 0;      // instante do último atualizar()
+    uint32_t _acumulado             = 0;      // integrador do modo ESTAVEL (ms)
+    uint32_t _tempoMudancaEstavel   = 0;      // última mudança aceita
+    uint32_t _duracaoEstadoAnterior = 0;
 
-// =============================================================================
-// Máquina de estados de gestos
-// =============================================================================
+    // Gestos
+    EstadoGesto _estadoGesto      = EstadoGesto::OCIOSO;
+    uint32_t    _tempoPressionado = 0;
+    uint32_t    _tempoSolto       = 0;
 
-void Botao::_processarGestos(uint32_t agora)
-{
-    const bool pressionouAgora =  _estadoAtual && !_estadoAnterior;
-    const bool soltouAgora     = !_estadoAtual &&  _estadoAnterior;
+    // Auto-repeat
+    bool     _autoRepeatAtivo   = false;
+    uint32_t _tempoUltimoRepeat = 0;
 
-    // ── Pressionou ───────────────────────────────────────────
-    if (pressionouAgora)
-    {
-        _tempoPressionado = agora;
-        _dispararEvento(_flagPressionou, _cbPressionar);
+    // Flags de evento
+    bool _flagPressionou  = false;
+    bool _flagSoltou      = false;
+    bool _flagClique      = false;
+    bool _flagCliqueDuplo = false;
+    bool _flagSegurou     = false;
+    bool _flagSoltouLongo = false;
+    bool _flagAutoRepeat  = false;
 
-        if (_estadoGesto == EstadoGesto::AGUARDANDO_SEGUNDO_CLIQUE)
-        {
-            _estadoGesto = EstadoGesto::SEGUNDO_CLIQUE;
-            _totalCliques++;
-            _dispararEvento(_flagCliqueDuplo, _cbCliqueDuplo);
-        }
-        else
-        {
-            _estadoGesto = EstadoGesto::PRESSIONADO;
-        }
-    }
+    // Callbacks
+    CallbackBotao _cbPressionar  = nullptr;
+    CallbackBotao _cbSoltar      = nullptr;
+    CallbackBotao _cbClicar      = nullptr;
+    CallbackBotao _cbCliqueDuplo = nullptr;
+    CallbackBotao _cbSegurar     = nullptr;
+    CallbackBotao _cbSoltarLongo = nullptr;
+    CallbackBotao _cbAutoRepeat  = nullptr;
 
-    // ── Segurando: clique longo ──────────────────────────────
-    if (_estadoAtual &&
-        _estadoGesto == EstadoGesto::PRESSIONADO &&
-        (agora - _tempoPressionado) >= _msCliqueLongo)
-    {
-        _estadoGesto = EstadoGesto::CLIQUE_LONGO_ATIVO;
-        _dispararEvento(_flagSegurou, _cbSegurar);
-    }
+    uint32_t _totalCliques = 0;
 
-    // ── Soltou ───────────────────────────────────────────────
-    if (soltouAgora)
-    {
-        _tempoSolto = agora;
-        _dispararEvento(_flagSoltou, _cbSoltar);
+    // Helpers
+    bool _lerBruto() const;
+    void _aplicarMudanca(bool novoEstado, uint32_t agora);
+    void _processarDebounce(uint32_t agora);
+    void _processarGestos(uint32_t agora);
+    void _processarAutoRepeat(uint32_t agora);
+    void _dispararEvento(bool& flag, const CallbackBotao& cb);
+    static bool _consumir(bool& flag);
+};
 
-        switch (_estadoGesto)
-        {
-            case EstadoGesto::CLIQUE_LONGO_ATIVO:
-                _estadoGesto = EstadoGesto::OCIOSO;
-                _dispararEvento(_flagSoltouLongo, _cbSoltarLongo);
-                break;
-
-            case EstadoGesto::PRESSIONADO:
-                if (_cliqueDuploHabilitado)
-                {
-                    _estadoGesto = EstadoGesto::AGUARDANDO_SEGUNDO_CLIQUE;
-                }
-                else
-                {
-                    _estadoGesto = EstadoGesto::OCIOSO;
-                    _totalCliques++;
-                    _dispararEvento(_flagClique, _cbClicar);
-                }
-                break;
-
-            default:
-                // SEGUNDO_CLIQUE (fim do duplo) ou pressionado desde o boot
-                _estadoGesto = EstadoGesto::OCIOSO;
-                break;
-        }
-    }
-
-    // ── Timeout do 2º clique → confirma clique simples ───────
-    if (_estadoGesto == EstadoGesto::AGUARDANDO_SEGUNDO_CLIQUE &&
-        (agora - _tempoSolto) >= _msCliqueDuplo)
-    {
-        _estadoGesto = EstadoGesto::OCIOSO;
-        _totalCliques++;
-        _dispararEvento(_flagClique, _cbClicar);
-    }
-}
-
-// =============================================================================
-// Auto-repeat
-// =============================================================================
-
-void Botao::_processarAutoRepeat(uint32_t agora)
-{
-    if (!_autoRepeatHabilitado || !_estadoAtual)
-    {
-        _autoRepeatAtivo = false;
-        return;
-    }
-
-    if (!_autoRepeatAtivo)
-    {
-        if ((agora - _tempoPressionado) >= _msAutoRepeatDelay)
-        {
-            _autoRepeatAtivo   = true;
-            _tempoUltimoRepeat = agora;
-            _dispararEvento(_flagAutoRepeat, _cbAutoRepeat);  // 1ª repetição
-        }
-    }
-    else if ((agora - _tempoUltimoRepeat) >= _msAutoRepeatIntv)
-    {
-        _tempoUltimoRepeat = agora;
-        _dispararEvento(_flagAutoRepeat, _cbAutoRepeat);
-    }
-}
-
-// =============================================================================
-// Helper
-// =============================================================================
-
-void Botao::_dispararEvento(bool& flag, const CallbackBotao& cb)
-{
-    flag = true;
-    if (cb) cb();
-}
+#endif // BOTAO_H
