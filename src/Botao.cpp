@@ -3,7 +3,7 @@
  * @brief Implementação da biblioteca Botao.
  *
  * @author  professorThiago (https://github.com/professorThiago)
- * @version 1.1.1
+ * @version 1.2git .0
  * @license MIT
  */
 

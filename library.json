@@ -1,6 +1,6 @@
 {
   "name": "Botao",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Biblioteca completa para leitura de botoes com debounce, gestos (clique simples, duplo, longo) e callbacks para ESP32 e Arduino.",
   "keywords": [
     "botao",
