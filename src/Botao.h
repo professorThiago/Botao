@@ -19,6 +19,7 @@
  *   No ESP32/ESP8266/RP2040 aceita lambdas com captura (`std::function`).
  * - Contador de cliques acumulados.
  * - Suporte a botão ativo em LOW (pull-up) ou HIGH (pull-down).
+ * - API em português e em inglês (`Button`, `begin()`, `onClick()`...).
  *
  * @par Uso mínimo (polling)
  * @code
@@ -50,8 +51,22 @@
  * void loop() { btn.atualizar(); }
  * @endcode
  *
+ * @par English API
+ * @code
+ * Button btn(5);
+ *
+ * void setup() {
+ *     btn.begin();
+ *     btn.onClick([]()       { Serial.println("Click!"); });
+ *     btn.onDoubleClick([]() { Serial.println("Double!"); });
+ *     btn.onLongPress([]()   { Serial.println("Long!"); });
+ * }
+ *
+ * void loop() { btn.update(); }
+ * @endcode
+ *
  * @author  professorThiago (https://github.com/professorThiago)
- * @version 1.2.0
+ * @version 1.3.0
  * @date    2026
  * @license MIT
  *
@@ -85,6 +100,7 @@
 #else
   typedef void (*CallbackBotao)();
 #endif
+typedef CallbackBotao ButtonCallback;   ///< EN
 
 /**
  * @brief Estratégia de debounce.
@@ -92,8 +108,12 @@
 enum class ModoDebounce : uint8_t
 {
     ESTAVEL,   ///< Integrador: aceita após `intervaloDebounce` ms acumulados no novo nível.
-    IMEDIATO   ///< Aceita a 1ª borda na hora; ignora novas bordas por `intervaloDebounce` ms.
+    IMEDIATO,  ///< Aceita a 1ª borda na hora; ignora novas bordas por `intervaloDebounce` ms.
+
+    STABLE    = ESTAVEL,   ///< EN: integrating debounce (default)
+    IMMEDIATE = IMEDIATO   ///< EN: accept the first edge immediately
 };
+using DebounceMode = ModoDebounce;   ///< EN
 
 /**
  * @brief Gerencia um botão físico com debounce, gestos e callbacks.
@@ -216,6 +236,46 @@ public:
     /** @brief Nível lógico bruto do pino, sem debounce (`true` = ativo). */
     bool lerPino() const;
 
+    // =======================================================================
+    // English API — same methods, English names (both can be mixed)
+    // =======================================================================
+
+    void begin()                                   { iniciar(); }
+    void update()                                  { atualizar(); }
+
+    void setDebounceTime(uint16_t ms)              { intervaloDebounce(ms); }
+    void setDebounceMode(ModoDebounce mode)        { modoDebounce(mode); }
+    void setDoubleClickTime(uint16_t ms)           { intervaloCliqueDuplo(ms); }
+    void enableDoubleClick(bool enable)            { habilitarCliqueDuplo(enable); }
+    void setLongPressTime(uint16_t ms)             { tempoCliqueLongo(ms); }
+    void setAutoRepeat(uint16_t delayMs = 600,
+                       uint16_t intervalMs = 150)  { configurarAutoRepeat(delayMs, intervalMs); }
+    void disableAutoRepeat()                       { desabilitarAutoRepeat(); }
+
+    void onPress      (CallbackBotao cb)           { aoPressionar(cb); }
+    void onRelease    (CallbackBotao cb)           { aoSoltar(cb); }
+    void onClick      (CallbackBotao cb)           { aoClicar(cb); }
+    void onDoubleClick(CallbackBotao cb)           { aoClicarDuplo(cb); }
+    void onLongPress  (CallbackBotao cb)           { aoSegurar(cb); }
+    void onLongRelease(CallbackBotao cb)           { aoSoltarLongo(cb); }
+    void onAutoRepeat (CallbackBotao cb)           { aoAutoRepeat(cb); }
+
+    bool pressed()                                 { return pressionou(); }
+    bool released()                                { return soltou(); }
+    bool clicked()                                 { return clicou(); }
+    bool doubleClicked()                           { return clicouDuplo(); }
+    bool longPressed()                             { return segurou(); }
+    bool longReleased()                            { return soltouLongo(); }
+    bool autoRepeated()                            { return autoRepetiu(); }
+
+    bool     isPressed() const                     { return estaPressionado(); }
+    bool     stateChanged() const                  { return mudouEstado(); }
+    uint32_t currentStateDuration() const          { return tempoNoEstadoAtual(); }
+    uint32_t previousStateDuration() const         { return tempoNoEstadoAnterior(); }
+    uint32_t clickCount() const                    { return totalCliques(); }
+    void     resetClickCount()                     { zerarContador(); }
+    bool     readPin() const                       { return lerPino(); }
+
 private:
     enum class EstadoGesto : uint8_t
     {
@@ -286,5 +346,8 @@ private:
     void _dispararEvento(bool& flag, const CallbackBotao& cb);
     static bool _consumir(bool& flag);
 };
+
+/** @brief English name for the class — `Button btn(5);` is the same as `Botao btn(5);`. */
+using Button = Botao;
 
 #endif // BOTAO_H
