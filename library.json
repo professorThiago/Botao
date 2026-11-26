@@ -1,7 +1,7 @@
 {
   "name": "Botao",
-  "version": "1.2.0",
-  "description": "Biblioteca completa para leitura de botoes com debounce, gestos (clique simples, duplo, longo) e callbacks para ESP32 e Arduino.",
+  "version": "1.3.0",
+  "description": "Biblioteca completa para leitura de botoes com debounce, gestos (clique simples, duplo, longo) e callbacks para ESP32 e Arduino. API em portugues e ingles.",
   "keywords": [
     "botao",
     "button",
@@ -10,7 +10,9 @@
     "gesto",
     "callback",
     "esp32",
-    "arduino"
+    "arduino",
+    "english",
+    "portugues"
   ],
   "homepage": "https://professorthiago.github.io/Botao/",
   "repository": {

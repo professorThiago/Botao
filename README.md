@@ -1,6 +1,6 @@
 # Botao
 
-Biblioteca Arduino/ESP32 para leitura de botões com **debounce resistente a ruído**, **gestos** (clique, duplo, longo, auto-repeat) e **callbacks** — com API em português.
+Biblioteca Arduino/ESP32 para leitura de botões com **debounce resistente a ruído**, **gestos** (clique, duplo, longo, auto-repeat) e **callbacks** — com API em **português e inglês**.
 
 ![PlatformIO Registry](https://badges.registry.platformio.org/packages/professorthiago/library/Botao.svg)
 ![Licença MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-blue.svg)
@@ -38,6 +38,7 @@ void loop() { btn.atualizar(); }
 - [Estado e informações](#estado-e-informações)
 - [Múltiplos botões](#múltiplos-botões)
 - [Linha do tempo dos eventos](#linha-do-tempo-dos-eventos)
+- [English API](#english-api)
 - [Solução de problemas](#solução-de-problemas)
 - [Exemplos](#exemplos)
 - [Histórico de versões](#histórico-de-versões)
@@ -58,7 +59,7 @@ void loop() { btn.atualizar(); }
 | Auto-repeat | ❌ | ✅ |
 | Callbacks (inclusive lambdas com captura no ESP32) | ❌ | ✅ |
 | Contador de cliques | ❌ | ✅ |
-| API em português | ❌ | ✅ |
+| API em português e inglês | ❌ | ✅ |
 
 **Plataformas:** ESP32, ESP8266, RP2040 e AVR (Arduino Uno, Nano, Mega…).
 
@@ -71,7 +72,7 @@ void loop() { btn.atualizar(); }
 ```ini
 ; platformio.ini
 lib_deps =
-    professorthiago/Botao@^1.2.0
+    professorthiago/Botao@^1.3.0
 ```
 
 Ou direto do GitHub:
@@ -308,6 +309,54 @@ Auto-repeat (600, 150)
 
 ---
 
+## English API
+
+Todos os métodos também têm nome em inglês e chamam o mesmo código. `Button` é a mesma classe que `Botao`, e os dois estilos podem ser misturados.
+
+```cpp
+#include <Botao.h>
+
+Button btn(5);
+
+void setup() {
+    btn.begin();
+    btn.onClick([]()       { Serial.println("Click!");  });
+    btn.onDoubleClick([]() { Serial.println("Double!"); });
+    btn.onLongPress([]()   { Serial.println("Long!");   });
+}
+
+void loop() {
+    btn.update();
+    if (btn.pressed()) Serial.println("Pressed");
+}
+```
+
+| Português | English |
+|-----------|---------|
+| `Botao` | `Button` |
+| `iniciar()` / `atualizar()` | `begin()` / `update()` |
+| `intervaloDebounce(ms)` | `setDebounceTime(ms)` |
+| `modoDebounce(ModoDebounce::ESTAVEL / IMEDIATO)` | `setDebounceMode(DebounceMode::STABLE / IMMEDIATE)` |
+| `intervaloCliqueDuplo(ms)` | `setDoubleClickTime(ms)` |
+| `habilitarCliqueDuplo(bool)` | `enableDoubleClick(bool)` |
+| `tempoCliqueLongo(ms)` | `setLongPressTime(ms)` |
+| `configurarAutoRepeat(delay, intervalo)` / `desabilitarAutoRepeat()` | `setAutoRepeat(delay, interval)` / `disableAutoRepeat()` |
+| `aoPressionar` / `aoSoltar` | `onPress` / `onRelease` |
+| `aoClicar` / `aoClicarDuplo` | `onClick` / `onDoubleClick` |
+| `aoSegurar` / `aoSoltarLongo` | `onLongPress` / `onLongRelease` |
+| `aoAutoRepeat` | `onAutoRepeat` |
+| `pressionou()` / `soltou()` | `pressed()` / `released()` |
+| `clicou()` / `clicouDuplo()` | `clicked()` / `doubleClicked()` |
+| `segurou()` / `soltouLongo()` | `longPressed()` / `longReleased()` |
+| `autoRepetiu()` | `autoRepeated()` |
+| `estaPressionado()` / `mudouEstado()` | `isPressed()` / `stateChanged()` |
+| `tempoNoEstadoAtual()` / `tempoNoEstadoAnterior()` | `currentStateDuration()` / `previousStateDuration()` |
+| `totalCliques()` / `zerarContador()` | `clickCount()` / `resetClickCount()` |
+| `lerPino()` | `readPin()` |
+| `CallbackBotao` | `ButtonCallback` |
+
+---
+
 ## Solução de problemas
 
 **Preciso segurar o botão muito tempo para ele responder**
@@ -336,10 +385,17 @@ Auto-repeat (600, 150)
 | `02_Callbacks` | Todos os callbacks + auto-repeat |
 | `03_GestosAvancados` | Controle de valor com gestos e tempo |
 | `04_MultiplosBotoes` | Três botões independentes com callbacks |
+| `05_EnglishAPI` | O exemplo completo usando os nomes em inglês |
 
 ---
 
 ## Histórico de versões
+
+### 1.3.0
+- **API em inglês:** classe `Button` e todos os métodos com nome em inglês (`begin`, `update`, `onClick`, `clicked`...). Os nomes em português continuam iguais.
+- `DebounceMode::STABLE` / `IMMEDIATE` e `ButtonCallback`.
+- Novo exemplo `05_EnglishAPI`.
+- Documentação completa em português e inglês no GitHub Pages.
 
 ### 1.1.0
 - **Debounce reescrito (integrador):** glitches de ruído não reiniciam mais a contagem, e o botão responde mesmo com `loop()` lento.

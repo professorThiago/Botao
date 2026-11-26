@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Botao — Documentação / Documentation</title>
-<meta name="description" content="Biblioteca de botões para Arduino e ESP32: debounce resistente a ruído, clique simples, duplo, longo, auto-repeat e callbacks. Button library for Arduino and ESP32.">
+<meta name="description" content="Biblioteca de botões para Arduino e ESP32: debounce resistente a ruído, clique simples, duplo, longo, auto-repeat e callbacks. Button library for Arduino and ESP32 (Portuguese and English API).">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230e7c86'/%3E%3Crect x='7' y='17' width='18' height='7' rx='2' fill='%23fff' opacity='.55'/%3E%3Crect x='10' y='10' width='12' height='9' rx='3' fill='%23fff'/%3E%3C/svg%3E">
 <style>
 :root{
@@ -135,7 +135,7 @@ footer{border-top:1px solid var(--line);padding:24px 44px;color:var(--soft);font
   <button class="menu" id="menu" aria-label="Menu">☰</button>
   <a class="brand" href="#inicio">
     <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#0e7c86"/><rect x="7" y="17" width="18" height="7" rx="2" fill="#fff" opacity=".55"/><rect x="10" y="10" width="12" height="9" rx="3" fill="#fff"/></svg>
-    Botao <small>v1.2.0</small>
+    Botao <small>v1.3.0</small>
   </a>
   <div class="spacer"></div>
   <div class="langs" role="group" aria-label="Idioma / Language">
@@ -178,7 +178,8 @@ footer{border-top:1px solid var(--line);padding:24px 44px;color:var(--soft);font
   <p class="lead pt">Leitura de botões para Arduino e ESP32 com <strong>debounce resistente a ruído</strong>, <strong>gestos</strong> (clique, duplo, longo, auto-repeat) e <strong>callbacks</strong> — sem encher o <code>loop()</code> de <code>if</code> e sem <code>delay()</code>.</p>
   <p class="lead en">Button handling for Arduino and ESP32 with <strong>noise-tolerant debounce</strong>, <strong>gestures</strong> (click, double, long, auto-repeat) and <strong>callbacks</strong> — no pile of <code>if</code>s in <code>loop()</code> and no <code>delay()</code>.</p>
   <div class="badges">
-    <span class="badge">version <b>1.2.0</b></span>
+    <span class="badge">version <b>1.3.0</b></span>
+    <span class="badge">API <b>PT + EN</b></span>
     <span class="badge">license <b>MIT</b></span>
     <span class="badge">platforms <b>ESP32 · ESP8266 · RP2040 · AVR</b></span>
     <span class="badge">framework <b>arduino</b></span>
@@ -189,18 +190,34 @@ footer{border-top:1px solid var(--line);padding:24px 44px;color:var(--soft);font
     <a class="btn s" href="https://github.com/professorThiago/Botao">GitHub</a>
   </div>
 
+<div class="pt">
 <div class="code"><span class="tag">cpp</span><button class="copy" type="button">Copiar</button><pre><code data-lang="cpp">#include &lt;Botao.h&gt;
 
-Botao btn(5);    // GPIO 5, INPUT_PULLUP, active LOW
+Botao btn(5);    // GPIO 5, INPUT_PULLUP, ativo em LOW
 
 void setup() {
     btn.iniciar();
-    btn.aoClicar([]()      { Serial.println("Click!");  });
-    btn.aoClicarDuplo([]() { Serial.println("Double!"); });
-    btn.aoSegurar([]()     { Serial.println("Long!");   });
+    btn.aoClicar([]()      { Serial.println("Clique!"); });
+    btn.aoClicarDuplo([]() { Serial.println("Duplo!");  });
+    btn.aoSegurar([]()     { Serial.println("Longo!");  });
 }
 
 void loop() { btn.atualizar(); }</code></pre></div>
+</div>
+<div class="en">
+<div class="code"><span class="tag">cpp</span><button class="copy" type="button">Copiar</button><pre><code data-lang="cpp">#include &lt;Botao.h&gt;
+
+Button btn(5);   // GPIO 5, INPUT_PULLUP, active LOW
+
+void setup() {
+    btn.begin();
+    btn.onClick([]()       { Serial.println("Click!");  });
+    btn.onDoubleClick([]() { Serial.println("Double!"); });
+    btn.onLongPress([]()   { Serial.println("Long!");   });
+}
+
+void loop() { btn.update(); }</code></pre></div>
+</div>
 
   <div class="grid">
     <div class="card"><div class="ic">🧹</div><h5><span class="pt">Debounce integrador</span><span class="en">Integrating debounce</span></h5><p class="pt">Glitches de ruído não reiniciam a contagem. Funciona até com <code>loop()</code> lento.</p><p class="en">Noise glitches do not restart the count. Works even with a slow <code>loop()</code>.</p></div>
@@ -208,7 +225,7 @@ void loop() { btn.atualizar(); }</code></pre></div>
     <div class="card"><div class="ic">🔁</div><h5>Auto-repeat</h5><p class="pt">Dispara repetidamente enquanto pressionado — volume, brilho, menus.</p><p class="en">Fires repeatedly while held — volume, brightness, menus.</p></div>
     <div class="card"><div class="ic">📣</div><h5>Callbacks</h5><p class="pt">Uma função por evento. Lambdas com captura no ESP32, ESP8266 e RP2040.</p><p class="en">One function per event. Capturing lambdas on ESP32, ESP8266 and RP2040.</p></div>
     <div class="card"><div class="ic">⏱️</div><h5><span class="pt">Tempos</span><span class="en">Timing</span></h5><p class="pt">Quanto tempo ficou pressionado, desde quando está no estado atual, contador de cliques.</p><p class="en">How long it was held, time in the current state, click counter.</p></div>
-    <div class="card"><div class="ic">🇧🇷</div><h5><span class="pt">API em português</span><span class="en">Portuguese API</span></h5><p class="pt">Nomes claros para quem está aprendendo: <code>clicou()</code>, <code>segurou()</code>...</p><p class="en">Clear names for learners: <code>clicou()</code> (clicked), <code>segurou()</code> (held)... See the <a href="#api">glossary</a>.</p></div>
+    <div class="card"><div class="ic">🌎</div><h5><span class="pt">Português e inglês</span><span class="en">Portuguese &amp; English</span></h5><p class="pt">Cada método tem os dois nomes: <code>clicou()</code> ou <code>clicked()</code>, <code>Botao</code> ou <code>Button</code>.</p><p class="en">Every method has both names: <code>clicked()</code> or <code>clicou()</code>, <code>Button</code> or <code>Botao</code>.</p></div>
   </div>
 
   <h3><span class="pt">Comparação com a Bounce2</span><span class="en">Compared with Bounce2</span></h3>
@@ -222,6 +239,7 @@ void loop() { btn.atualizar(); }</code></pre></div>
     <tr><td>Auto-repeat</td><td>❌</td><td>✅</td></tr>
     <tr><td>Callbacks</td><td>❌</td><td>✅</td></tr>
     <tr><td><span class="pt">Contador de cliques</span><span class="en">Click counter</span></td><td>❌</td><td>✅</td></tr>
+    <tr><td><span class="pt">API em português e inglês</span><span class="en">Portuguese and English API</span></td><td>—</td><td>✅</td></tr>
   </table></div>
 </section>
 
@@ -231,7 +249,7 @@ void loop() { btn.atualizar(); }</code></pre></div>
   <h3>PlatformIO</h3>
 <div class="code"><span class="tag">ini</span><button class="copy" type="button">Copiar</button><pre><code data-lang="ini">; platformio.ini
 lib_deps =
-    professorthiago/Botao@^1.2.0</code></pre></div>
+    professorthiago/Botao@^1.3.0</code></pre></div>
   <p class="pt">Ou direto do GitHub:</p>
   <p class="en">Or straight from GitHub:</p>
 <div class="code"><span class="tag">ini</span><button class="copy" type="button">Copiar</button><pre><code data-lang="ini">lib_deps =
@@ -278,19 +296,19 @@ void loop() {
 <div class="code"><span class="tag">cpp</span><button class="copy" type="button">Copiar</button><pre><code data-lang="cpp">#include &lt;Arduino.h&gt;
 #include &lt;Botao.h&gt;
 
-Botao btn(5);   // GPIO 5, INPUT_PULLUP, active LOW
+Button btn(5);   // GPIO 5, INPUT_PULLUP, active LOW
 
 void setup() {
     Serial.begin(115200);
-    btn.iniciar();                  // begin
+    btn.begin();
 }
 
 void loop() {
-    btn.atualizar();                // update — ALWAYS in loop(), once per pass
+    btn.update();   // ALWAYS in loop(), once per pass
 
-    if (btn.clicou())      Serial.println("Click!");    // clicked
-    if (btn.clicouDuplo()) Serial.println("Double!");   // double-clicked
-    if (btn.segurou())     Serial.println("Long!");     // held (long press)
+    if (btn.clicked())       Serial.println("Click!");
+    if (btn.doubleClicked()) Serial.println("Double!");
+    if (btn.longPressed())   Serial.println("Long!");
 }</code></pre></div>
 </div>
 
@@ -317,28 +335,33 @@ void loop() {
 <div class="code"><span class="tag">cpp</span><button class="copy" type="button">Copiar</button><pre><code data-lang="cpp">#include &lt;Arduino.h&gt;
 #include &lt;Botao.h&gt;
 
-Botao btn(5);
+Button btn(5);
 
 void setup() {
     Serial.begin(115200);
-    btn.iniciar();
-    btn.aoClicar([]()      { Serial.println("Click!");  });   // on click
-    btn.aoClicarDuplo([]() { Serial.println("Double!"); });   // on double click
-    btn.aoSegurar([]()     { Serial.println("Long!");   });   // on hold
+    btn.begin();
+    btn.onClick([]()       { Serial.println("Click!");  });
+    btn.onDoubleClick([]() { Serial.println("Double!"); });
+    btn.onLongPress([]()   { Serial.println("Long!");   });
 }
 
 void loop() {
-    btn.atualizar();   // loop() stays clean
+    btn.update();   // loop() stays clean
 }</code></pre></div>
 </div>
   <div class="box warn pt"><strong>Evite <code>delay()</code> no <code>loop()</code></strong><p>Um toque mais curto que o intervalo entre duas chamadas de <code>atualizar()</code> pode passar despercebido. Use <code>millis()</code> para temporizar.</p></div>
-  <div class="box warn en"><strong>Avoid <code>delay()</code> in <code>loop()</code></strong><p>A press shorter than the gap between two <code>atualizar()</code> calls may be missed. Use <code>millis()</code> for timing.</p></div>
+  <div class="box warn en"><strong>Avoid <code>delay()</code> in <code>loop()</code></strong><p>A press shorter than the gap between two <code>update()</code> calls may be missed. Use <code>millis()</code> for timing.</p></div>
+
+  <h3><span class="pt">Português ou inglês?</span><span class="en">Portuguese or English?</span></h3>
+  <p class="pt">Desde a versão 1.3.0, todo método tem um nome em inglês que chama o mesmo código: <code>Button</code> = <code>Botao</code>, <code>begin()</code> = <code>iniciar()</code>, <code>onClick()</code> = <code>aoClicar()</code>, <code>clicked()</code> = <code>clicou()</code>... Os dois estilos podem ser misturados no mesmo programa. A tabela completa está na <a href="#api">referência da API</a>.</p>
+  <p class="en">Since version 1.3.0 every method has an English name that calls the same code: <code>Button</code> = <code>Botao</code>, <code>begin()</code> = <code>iniciar()</code>, <code>onClick()</code> = <code>aoClicar()</code>, <code>clicked()</code> = <code>clicou()</code>... Both styles can be mixed in the same program. The full table is in the <a href="#api">API reference</a>.</p>
 </section>
 
 <!-- ================================================================ -->
 <section id="ligacao">
   <h2><span class="pt">Ligação e construtor</span><span class="en">Wiring &amp; constructor</span></h2>
 <div class="code"><span class="tag">cpp</span><button class="copy" type="button">Copiar</button><pre><code data-lang="cpp">Botao btn(pin);                         // internal pull-up, active LOW (default)
+Button btn(pin);                        // same thing, English class name
 Botao btn(pin, INPUT_PULLDOWN, HIGH);   // internal pull-down, active HIGH (ESP32)
 Botao btn(pin, INPUT, LOW);             // external pull-up, active LOW
 Botao btn(pin, INPUT, HIGH);            // external pull-down, active HIGH</code></pre></div>
@@ -380,7 +403,7 @@ Botao btn(pin, INPUT, HIGH);            // external pull-down, active HIGH</code
     <tr><td><span class="pt">Botão ao 3V3 + pull-down (<code>HIGH</code>)</span><span class="en">Button to 3V3 + pull-down (<code>HIGH</code>)</span></td><td><span class="pt">borda de subida</span><span class="en">rising edge</span></td><td><span class="pt">borda de descida</span><span class="en">falling edge</span></td></tr>
   </table></div>
   <div class="box info pt"><strong>Precisa da outra borda?</strong><p>Use <code>soltou()</code>. Não inverta o <code>nivelAtivo</code> só para isso: <code>segurou()</code> e <code>estaPressionado()</code> também inverteriam.</p></div>
-  <div class="box info en"><strong>Need the other edge?</strong><p>Use <code>soltou()</code> (released). Do not flip <code>nivelAtivo</code> just for that: <code>segurou()</code> and <code>estaPressionado()</code> would flip too.</p></div>
+  <div class="box info en"><strong>Need the other edge?</strong><p>Use <code>released()</code>. Do not flip <code>activeLevel</code> just for that: <code>longPressed()</code> and <code>isPressed()</code> would flip too.</p></div>
 </section>
 
 <!-- ================================================================ -->
@@ -406,36 +429,42 @@ Botao btn(pin, INPUT, HIGH);            // external pull-down, active HIGH</code
 
   <div class="tbl"><table>
     <tr><th><span class="pt">Modo</span><span class="en">Mode</span></th><th><span class="pt">Como funciona</span><span class="en">How it works</span></th><th><span class="pt">Quando usar</span><span class="en">When to use</span></th></tr>
-    <tr><td><code>ModoDebounce::ESTAVEL</code> <span class="pt">(padrão)</span><span class="en">(default)</span></td>
+    <tr><td><code>ModoDebounce::ESTAVEL</code> / <code>DebounceMode::STABLE</code> <span class="pt">(padrão)</span><span class="en">(default)</span></td>
       <td><span class="pt"><strong>Integrador:</strong> soma o tempo em que o pino está no novo nível e desconta o tempo em que volta. Aceita a mudança quando o saldo chega a <code>intervaloDebounce</code>. Glitches curtos não reiniciam a contagem.</span><span class="en"><strong>Integrator:</strong> adds the time the pin spends at the new level and subtracts the time it goes back. The change is accepted when the balance reaches <code>intervaloDebounce</code>. Short glitches do not restart the count.</span></td>
       <td><span class="pt">Quase sempre. Tolera ruído elétrico, fios longos, relés e cargas próximas.</span><span class="en">Almost always. Tolerates electrical noise, long wires, relays and nearby loads.</span></td></tr>
-    <tr><td><code>ModoDebounce::IMEDIATO</code></td>
+    <tr><td><code>ModoDebounce::IMEDIATO</code> / <code>DebounceMode::IMMEDIATE</code></td>
       <td><span class="pt">Aceita a <strong>primeira</strong> borda na hora e ignora novas bordas por <code>intervaloDebounce</code> ms.</span><span class="en">Accepts the <strong>first</strong> edge immediately and ignores new edges for <code>intervaloDebounce</code> ms.</span></td>
       <td><span class="pt">Quando a latência zero importa e o sinal é limpo. Com ruído, gera eventos falsos.</span><span class="en">When zero latency matters and the signal is clean. With noise it produces false events.</span></td></tr>
   </table></div>
+<div class="pt">
 <div class="code"><span class="tag">cpp</span><button class="copy" type="button">Copiar</button><pre><code data-lang="cpp">btn.modoDebounce(ModoDebounce::IMEDIATO);
 btn.intervaloDebounce(30);    // ms</code></pre></div>
+</div>
+<div class="en">
+<div class="code"><span class="tag">cpp</span><button class="copy" type="button">Copiar</button><pre><code data-lang="cpp">btn.setDebounceMode(DebounceMode::IMMEDIATE);
+btn.setDebounceTime(30);      // ms</code></pre></div>
+</div>
   <p class="pt">O modo <code>ESTAVEL</code> usa o tempo real entre chamadas de <code>atualizar()</code>, então o debounce continua correto mesmo se o seu <code>loop()</code> for lento.</p>
-  <p class="en"><code>ESTAVEL</code> mode uses the real time between <code>atualizar()</code> calls, so debounce stays correct even when your <code>loop()</code> is slow.</p>
+  <p class="en"><code>STABLE</code> mode uses the real time between <code>update()</code> calls, so debounce stays correct even when your <code>loop()</code> is slow.</p>
 </section>
 
 <!-- ================================================================ -->
 <section id="configuracao">
   <h2><span class="pt">Configuração</span><span class="en">Configuration</span></h2>
   <p class="pt">Tudo é opcional. Chame no <code>setup()</code>, depois do <code>iniciar()</code>.</p>
-  <p class="en">Everything is optional. Call it in <code>setup()</code>, after <code>iniciar()</code>.</p>
+  <p class="en">Everything is optional. Call it in <code>setup()</code>, after <code>begin()</code>.</p>
   <div class="tbl"><table>
-    <tr><th><span class="pt">Método</span><span class="en">Method</span></th><th><span class="pt">Padrão</span><span class="en">Default</span></th><th><span class="pt">Descrição</span><span class="en">Description</span></th></tr>
-    <tr><td><code>intervaloDebounce(ms)</code></td><td>25 ms</td><td><span class="pt">Tempo (acumulado) no novo nível para aceitar a mudança</span><span class="en">(Accumulated) time at the new level to accept a change</span></td></tr>
-    <tr><td><code>modoDebounce(modo)</code></td><td><code>ESTAVEL</code></td><td><span class="pt">Estratégia de debounce</span><span class="en">Debounce strategy</span></td></tr>
-    <tr><td><code>intervaloCliqueDuplo(ms)</code></td><td>400 ms</td><td><span class="pt">Janela para o segundo clique</span><span class="en">Window for the second click</span></td></tr>
-    <tr><td><code>habilitarCliqueDuplo(bool)</code></td><td><code>true</code></td><td><span class="pt">Com <code>false</code>, <code>clicou()</code> dispara na hora em que solta</span><span class="en">With <code>false</code>, <code>clicou()</code> fires right on release</span></td></tr>
-    <tr><td><code>tempoCliqueLongo(ms)</code></td><td>800 ms</td><td><span class="pt">Tempo mínimo pressionado para clique longo</span><span class="en">Minimum hold time for a long click</span></td></tr>
-    <tr><td><code>configurarAutoRepeat(delay, intervalo)</code></td><td>600, 150 ms</td><td><span class="pt">Habilita o auto-repeat e define início e cadência</span><span class="en">Enables auto-repeat and sets start delay and rate</span></td></tr>
-    <tr><td><code>desabilitarAutoRepeat()</code></td><td>—</td><td><span class="pt">Desliga o auto-repeat</span><span class="en">Turns auto-repeat off</span></td></tr>
+    <tr><th>PT</th><th>EN</th><th><span class="pt">Padrão</span><span class="en">Default</span></th><th><span class="pt">Descrição</span><span class="en">Description</span></th></tr>
+    <tr><td><code>intervaloDebounce(ms)</code></td><td><code>setDebounceTime(ms)</code></td><td>25 ms</td><td><span class="pt">Tempo (acumulado) no novo nível para aceitar a mudança</span><span class="en">(Accumulated) time at the new level to accept a change</span></td></tr>
+    <tr><td><code>modoDebounce(modo)</code></td><td><code>setDebounceMode(mode)</code></td><td><code>ESTAVEL</code> / <code>STABLE</code></td><td><span class="pt">Estratégia de debounce</span><span class="en">Debounce strategy</span></td></tr>
+    <tr><td><code>intervaloCliqueDuplo(ms)</code></td><td><code>setDoubleClickTime(ms)</code></td><td>400 ms</td><td><span class="pt">Janela para o segundo clique</span><span class="en">Window for the second click</span></td></tr>
+    <tr><td><code>habilitarCliqueDuplo(bool)</code></td><td><code>enableDoubleClick(bool)</code></td><td><code>true</code></td><td><span class="pt">Com <code>false</code>, o clique simples dispara na hora em que solta</span><span class="en">With <code>false</code>, a single click fires right on release</span></td></tr>
+    <tr><td><code>tempoCliqueLongo(ms)</code></td><td><code>setLongPressTime(ms)</code></td><td>800 ms</td><td><span class="pt">Tempo mínimo pressionado para clique longo</span><span class="en">Minimum hold time for a long press</span></td></tr>
+    <tr><td><code>configurarAutoRepeat(delay, intervalo)</code></td><td><code>setAutoRepeat(delay, interval)</code></td><td>600, 150 ms</td><td><span class="pt">Habilita o auto-repeat e define início e cadência</span><span class="en">Enables auto-repeat and sets start delay and rate</span></td></tr>
+    <tr><td><code>desabilitarAutoRepeat()</code></td><td><code>disableAutoRepeat()</code></td><td>—</td><td><span class="pt">Desliga o auto-repeat</span><span class="en">Turns auto-repeat off</span></td></tr>
   </table></div>
   <div class="box info pt"><strong>Clique simples demorando?</strong><p>Com o clique duplo habilitado, <code>clicou()</code> só dispara <code>intervaloCliqueDuplo</code> ms depois de soltar, porque a biblioteca precisa esperar para saber se virá um 2º clique. Se você não usa clique duplo, chame <code>habilitarCliqueDuplo(false)</code>. Para reagir no instante do toque, use <code>pressionou()</code>.</p></div>
-  <div class="box info en"><strong>Single click feels slow?</strong><p>With double click enabled, <code>clicou()</code> only fires <code>intervaloCliqueDuplo</code> ms after release, because the library must wait to know whether a 2nd click is coming. If you do not use double click, call <code>habilitarCliqueDuplo(false)</code>. To react the instant it is touched, use <code>pressionou()</code>.</p></div>
+  <div class="box info en"><strong>Single click feels slow?</strong><p>With double click enabled, <code>clicked()</code> only fires <code>setDoubleClickTime</code> ms after release, because the library must wait to know whether a 2nd click is coming. If you do not use double click, call <code>enableDoubleClick(false)</code>. To react the instant it is touched, use <code>pressed()</code>.</p></div>
 </section>
 
 <!-- ================================================================ -->
@@ -444,17 +473,17 @@ btn.intervaloDebounce(30);    // ms</code></pre></div>
   <p class="pt">Cada método retorna <code>true</code> <strong>uma única vez</strong> por evento e limpa o aviso automaticamente.</p>
   <p class="en">Each method returns <code>true</code> <strong>exactly once</strong> per event and clears the flag automatically.</p>
   <div class="tbl"><table>
-    <tr><th><span class="pt">Método</span><span class="en">Method</span></th><th><span class="pt">Em inglês</span><span class="en">Meaning</span></th><th><span class="pt">Quando dispara</span><span class="en">When it fires</span></th></tr>
-    <tr><td><code>pressionou()</code></td><td>pressed</td><td><span class="pt">Ao pressionar (após o debounce)</span><span class="en">On press (after debounce)</span></td></tr>
-    <tr><td><code>soltou()</code></td><td>released</td><td><span class="pt">Ao soltar</span><span class="en">On release</span></td></tr>
-    <tr><td><code>clicou()</code></td><td>clicked</td><td><span class="pt">Clique simples confirmado (não foi duplo nem longo)</span><span class="en">Confirmed single click (not double, not long)</span></td></tr>
-    <tr><td><code>clicouDuplo()</code></td><td>double-clicked</td><td><span class="pt">No 2º pressionar, dentro de <code>intervaloCliqueDuplo</code></span><span class="en">On the 2nd press, within <code>intervaloCliqueDuplo</code></span></td></tr>
-    <tr><td><code>segurou()</code></td><td>held</td><td><span class="pt">Ao atingir <code>tempoCliqueLongo</code>, ainda pressionado</span><span class="en">On reaching <code>tempoCliqueLongo</code>, still pressed</span></td></tr>
-    <tr><td><code>soltouLongo()</code></td><td>long-released</td><td><span class="pt">Ao soltar depois de um clique longo</span><span class="en">On release after a long click</span></td></tr>
-    <tr><td><code>autoRepetiu()</code></td><td>auto-repeated</td><td><span class="pt">Em cada disparo do auto-repeat</span><span class="en">On each auto-repeat tick</span></td></tr>
+    <tr><th>PT</th><th>EN</th><th><span class="pt">Quando dispara</span><span class="en">When it fires</span></th></tr>
+    <tr><td><code>pressionou()</code></td><td><code>pressed()</code></td><td><span class="pt">Ao pressionar (após o debounce)</span><span class="en">On press (after debounce)</span></td></tr>
+    <tr><td><code>soltou()</code></td><td><code>released()</code></td><td><span class="pt">Ao soltar</span><span class="en">On release</span></td></tr>
+    <tr><td><code>clicou()</code></td><td><code>clicked()</code></td><td><span class="pt">Clique simples confirmado (não foi duplo nem longo)</span><span class="en">Confirmed single click (not double, not long)</span></td></tr>
+    <tr><td><code>clicouDuplo()</code></td><td><code>doubleClicked()</code></td><td><span class="pt">No 2º pressionar, dentro da janela do clique duplo</span><span class="en">On the 2nd press, within the double-click window</span></td></tr>
+    <tr><td><code>segurou()</code></td><td><code>longPressed()</code></td><td><span class="pt">Ao atingir o tempo de clique longo, ainda pressionado</span><span class="en">On reaching the long-press time, still pressed</span></td></tr>
+    <tr><td><code>soltouLongo()</code></td><td><code>longReleased()</code></td><td><span class="pt">Ao soltar depois de um clique longo</span><span class="en">On release after a long press</span></td></tr>
+    <tr><td><code>autoRepetiu()</code></td><td><code>autoRepeated()</code></td><td><span class="pt">Em cada disparo do auto-repeat</span><span class="en">On each auto-repeat tick</span></td></tr>
   </table></div>
   <div class="box warn pt"><strong>Leia cada evento em um só lugar</strong><p>Como o aviso é limpo na primeira leitura, chamar <code>clicou()</code> em dois pontos do código faz o segundo nunca ver o clique.</p></div>
-  <div class="box warn en"><strong>Read each event in one place only</strong><p>Since the flag is cleared on the first read, calling <code>clicou()</code> in two places means the second one never sees the click.</p></div>
+  <div class="box warn en"><strong>Read each event in one place only</strong><p>Since the flag is cleared on the first read, calling <code>clicked()</code> in two places means the second one never sees the click.</p></div>
 </section>
 
 <!-- ================================================================ -->
@@ -470,16 +499,17 @@ btn.aoSoltarLongo(fn);   // soltou depois de um clique longo
 btn.aoAutoRepeat(fn);    // cada disparo do auto-repeat (também habilita o auto-repeat)</code></pre></div>
 </div>
 <div class="en">
-<div class="code"><span class="tag">cpp</span><button class="copy" type="button">Copiar</button><pre><code data-lang="cpp">btn.aoPressionar(fn);    // on press
-btn.aoSoltar(fn);        // on release
-btn.aoClicar(fn);        // confirmed single click
-btn.aoClicarDuplo(fn);   // double click
-btn.aoSegurar(fn);       // long press reached
-btn.aoSoltarLongo(fn);   // released after a long press
-btn.aoAutoRepeat(fn);    // each auto-repeat tick (also enables auto-repeat)</code></pre></div>
+<div class="code"><span class="tag">cpp</span><button class="copy" type="button">Copiar</button><pre><code data-lang="cpp">btn.onPress(fn);         // on press
+btn.onRelease(fn);       // on release
+btn.onClick(fn);         // confirmed single click
+btn.onDoubleClick(fn);   // double click
+btn.onLongPress(fn);     // long press reached
+btn.onLongRelease(fn);   // released after a long press
+btn.onAutoRepeat(fn);    // each auto-repeat tick (also enables auto-repeat)</code></pre></div>
 </div>
   <p class="pt">Funções comuns e lambdas são aceitas. Os callbacks são chamados de dentro do <code>atualizar()</code>, então podem usar <code>Serial</code>, <code>digitalWrite</code> etc. normalmente — mas devem ser rápidos.</p>
-  <p class="en">Plain functions and lambdas are accepted. Callbacks run inside <code>atualizar()</code>, so they may use <code>Serial</code>, <code>digitalWrite</code> and so on — but keep them quick.</p>
+  <p class="en">Plain functions and lambdas are accepted. Callbacks run inside <code>update()</code>, so they may use <code>Serial</code>, <code>digitalWrite</code> and so on — but keep them quick.</p>
+<div class="pt">
 <div class="code"><span class="tag">cpp</span><button class="copy" type="button">Copiar</button><pre><code data-lang="cpp">const int LED = 2;
 
 void alternar() { digitalWrite(LED, !digitalRead(LED)); }
@@ -487,22 +517,51 @@ void alternar() { digitalWrite(LED, !digitalRead(LED)); }
 void setup() {
     pinMode(LED, OUTPUT);
     btn.iniciar();
-    btn.aoClicar(alternar);                                // plain function
+    btn.aoClicar(alternar);                                // função comum
     btn.aoSegurar([]() { digitalWrite(LED, LOW); });       // lambda
 }</code></pre></div>
+</div>
+<div class="en">
+<div class="code"><span class="tag">cpp</span><button class="copy" type="button">Copiar</button><pre><code data-lang="cpp">const int LED = 2;
+
+void toggle() { digitalWrite(LED, !digitalRead(LED)); }
+
+void setup() {
+    pinMode(LED, OUTPUT);
+    btn.begin();
+    btn.onClick(toggle);                                   // plain function
+    btn.onLongPress([]() { digitalWrite(LED, LOW); });     // lambda
+}</code></pre></div>
+</div>
   <h3><span class="pt">Lambdas com captura (ESP32, ESP8266, RP2040)</span><span class="en">Capturing lambdas (ESP32, ESP8266, RP2040)</span></h3>
+<div class="pt">
 <div class="code"><span class="tag">cpp</span><button class="copy" type="button">Copiar</button><pre><code data-lang="cpp">class Lampada {
 public:
     Lampada(uint8_t pinoBotao) : btn(pinoBotao) {}
     void iniciar() {
         btn.iniciar();
-        btn.aoClicar([this]() { ligada = !ligada; });   // captures this
+        btn.aoClicar([this]() { ligada = !ligada; });   // captura o this
     }
     void atualizar() { btn.atualizar(); }
 private:
     Botao btn;
     bool ligada = false;
 };</code></pre></div>
+</div>
+<div class="en">
+<div class="code"><span class="tag">cpp</span><button class="copy" type="button">Copiar</button><pre><code data-lang="cpp">class Lamp {
+public:
+    Lamp(uint8_t buttonPin) : btn(buttonPin) {}
+    void begin() {
+        btn.begin();
+        btn.onClick([this]() { on = !on; });   // captures this
+    }
+    void update() { btn.update(); }
+private:
+    Button btn;
+    bool on = false;
+};</code></pre></div>
+</div>
   <p class="pt">No AVR (Uno/Nano/Mega) o callback é um ponteiro de função: use lambdas <strong>sem</strong> captura ou funções comuns.</p>
   <p class="en">On AVR (Uno/Nano/Mega) the callback is a function pointer: use <strong>non-capturing</strong> lambdas or plain functions.</p>
 </section>
@@ -512,35 +571,52 @@ private:
   <h2>Auto-repeat</h2>
   <p class="pt">Dispara repetidamente enquanto o botão está pressionado. Ótimo para volume, brilho, rolagem de menu ou ajuste de valores.</p>
   <p class="en">Fires repeatedly while the button is held. Great for volume, brightness, menu scrolling or value adjustment.</p>
+<div class="pt">
 <div class="code"><span class="tag">cpp</span><button class="copy" type="button">Copiar</button><pre><code data-lang="cpp">int volume = 0;
 
 void setup() {
     btn.iniciar();
-    btn.configurarAutoRepeat(600, 100);           // 1st tick after 600 ms, then every 100 ms
+    btn.configurarAutoRepeat(600, 100);           // 1º disparo após 600 ms, depois a cada 100 ms
     btn.aoAutoRepeat([]() { if (volume &lt; 100) volume++; });
 }
 
 void loop() {
     btn.atualizar();
-    // polling alternative:
+    // alternativa por polling:
     // if (btn.autoRepetiu()) volume++;
 }</code></pre></div>
+</div>
+<div class="en">
+<div class="code"><span class="tag">cpp</span><button class="copy" type="button">Copiar</button><pre><code data-lang="cpp">int volume = 0;
+
+void setup() {
+    btn.begin();
+    btn.setAutoRepeat(600, 100);                  // 1st tick after 600 ms, then every 100 ms
+    btn.onAutoRepeat([]() { if (volume &lt; 100) volume++; });
+}
+
+void loop() {
+    btn.update();
+    // polling alternative:
+    // if (btn.autoRepeated()) volume++;
+}</code></pre></div>
+</div>
   <p class="pt">Registrar <code>aoAutoRepeat()</code> já habilita o auto-repeat com os tempos atuais. Para parar: <code>desabilitarAutoRepeat()</code>.</p>
-  <p class="en">Registering <code>aoAutoRepeat()</code> enables auto-repeat with the current timings. To stop it: <code>desabilitarAutoRepeat()</code>.</p>
+  <p class="en">Registering <code>onAutoRepeat()</code> enables auto-repeat with the current timings. To stop it: <code>disableAutoRepeat()</code>.</p>
 </section>
 
 <!-- ================================================================ -->
 <section id="estado">
   <h2><span class="pt">Estado e tempos</span><span class="en">State &amp; timing</span></h2>
   <div class="tbl"><table>
-    <tr><th><span class="pt">Método</span><span class="en">Method</span></th><th><span class="pt">Retorno</span><span class="en">Returns</span></th><th><span class="pt">Descrição</span><span class="en">Description</span></th></tr>
-    <tr><td><code>estaPressionado()</code></td><td><code>bool</code></td><td><span class="pt">Pressionado agora (após debounce)</span><span class="en">Pressed right now (after debounce)</span></td></tr>
-    <tr><td><code>mudouEstado()</code></td><td><code>bool</code></td><td><span class="pt">O estado mudou no último <code>atualizar()</code></span><span class="en">State changed on the last <code>atualizar()</code></span></td></tr>
-    <tr><td><code>tempoNoEstadoAtual()</code></td><td><code>uint32_t</code> ms</td><td><span class="pt">Desde a última mudança de estado</span><span class="en">Since the last state change</span></td></tr>
-    <tr><td><code>tempoNoEstadoAnterior()</code></td><td><code>uint32_t</code> ms</td><td><span class="pt">Duração do estado anterior (ex.: quanto tempo ficou pressionado)</span><span class="en">Duration of the previous state (e.g. how long it was held)</span></td></tr>
-    <tr><td><code>totalCliques()</code></td><td><code>uint32_t</code></td><td><span class="pt">Cliques simples + duplos desde o início</span><span class="en">Single + double clicks since start</span></td></tr>
-    <tr><td><code>zerarContador()</code></td><td>—</td><td><span class="pt">Zera o contador</span><span class="en">Resets the counter</span></td></tr>
-    <tr><td><code>lerPino()</code></td><td><code>bool</code></td><td><span class="pt">Nível bruto do pino, sem debounce (<code>true</code> = ativo)</span><span class="en">Raw pin level, no debounce (<code>true</code> = active)</span></td></tr>
+    <tr><th>PT</th><th>EN</th><th><span class="pt">Retorno</span><span class="en">Returns</span></th><th><span class="pt">Descrição</span><span class="en">Description</span></th></tr>
+    <tr><td><code>estaPressionado()</code></td><td><code>isPressed()</code></td><td><code>bool</code></td><td><span class="pt">Pressionado agora (após debounce)</span><span class="en">Pressed right now (after debounce)</span></td></tr>
+    <tr><td><code>mudouEstado()</code></td><td><code>stateChanged()</code></td><td><code>bool</code></td><td><span class="pt">O estado mudou no último <code>atualizar()</code></span><span class="en">State changed on the last <code>update()</code></span></td></tr>
+    <tr><td><code>tempoNoEstadoAtual()</code></td><td><code>currentStateDuration()</code></td><td><code>uint32_t</code> ms</td><td><span class="pt">Desde a última mudança de estado</span><span class="en">Since the last state change</span></td></tr>
+    <tr><td><code>tempoNoEstadoAnterior()</code></td><td><code>previousStateDuration()</code></td><td><code>uint32_t</code> ms</td><td><span class="pt">Duração do estado anterior (ex.: quanto tempo ficou pressionado)</span><span class="en">Duration of the previous state (e.g. how long it was held)</span></td></tr>
+    <tr><td><code>totalCliques()</code></td><td><code>clickCount()</code></td><td><code>uint32_t</code></td><td><span class="pt">Cliques simples + duplos desde o início</span><span class="en">Single + double clicks since start</span></td></tr>
+    <tr><td><code>zerarContador()</code></td><td><code>resetClickCount()</code></td><td>—</td><td><span class="pt">Zera o contador</span><span class="en">Resets the counter</span></td></tr>
+    <tr><td><code>lerPino()</code></td><td><code>readPin()</code></td><td><code>bool</code></td><td><span class="pt">Nível bruto do pino, sem debounce (<code>true</code> = ativo)</span><span class="en">Raw pin level, no debounce (<code>true</code> = active)</span></td></tr>
   </table></div>
 <div class="pt">
 <div class="code"><span class="tag">cpp</span><button class="copy" type="button">Copiar</button><pre><code data-lang="cpp">// Quanto tempo o botão ficou pressionado?
@@ -555,13 +631,13 @@ if (btn.estaPressionado()) {
 </div>
 <div class="en">
 <div class="code"><span class="tag">cpp</span><button class="copy" type="button">Copiar</button><pre><code data-lang="cpp">// How long was the button held?
-if (btn.soltou()) {
-    Serial.printf("Held for %lu ms\n", btn.tempoNoEstadoAnterior());
+if (btn.released()) {
+    Serial.printf("Held for %lu ms\n", btn.previousStateDuration());
 }
 
 // Speed proportional to hold time
-if (btn.estaPressionado()) {
-    int step = btn.tempoNoEstadoAtual() &gt; 2000 ? 5 : 1;
+if (btn.isPressed()) {
+    int step = btn.currentStateDuration() &gt; 2000 ? 5 : 1;
 }</code></pre></div>
 </div>
   <p class="pt"><code>estaPresionado()</code> (grafia antiga) continua funcionando, mas está obsoleto.</p>
@@ -572,7 +648,8 @@ if (btn.estaPressionado()) {
 <section id="multiplos">
   <h2><span class="pt">Múltiplos botões</span><span class="en">Multiple buttons</span></h2>
   <p class="pt">Cada objeto é independente: crie um por botão e chame <code>atualizar()</code> de todos.</p>
-  <p class="en">Each object is independent: create one per button and call <code>atualizar()</code> on all of them.</p>
+  <p class="en">Each object is independent: create one per button and call <code>update()</code> on all of them.</p>
+<div class="pt">
 <div class="code"><span class="tag">cpp</span><button class="copy" type="button">Copiar</button><pre><code data-lang="cpp">Botao botoes[] = { Botao(5), Botao(6), Botao(7) };
 
 void setup() {
@@ -581,12 +658,29 @@ void setup() {
 
     botoes[0].aoClicar([]()  { Serial.println("A"); });
     botoes[1].aoClicar([]()  { Serial.println("B"); });
-    botoes[2].aoSegurar([]() { Serial.println("C long"); });
+    botoes[2].aoSegurar([]() { Serial.println("C longo"); });
 }
 
 void loop() {
     for (auto&amp; b : botoes) b.atualizar();
 }</code></pre></div>
+</div>
+<div class="en">
+<div class="code"><span class="tag">cpp</span><button class="copy" type="button">Copiar</button><pre><code data-lang="cpp">Button buttons[] = { Button(5), Button(6), Button(7) };
+
+void setup() {
+    Serial.begin(115200);
+    for (auto&amp; b : buttons) b.begin();
+
+    buttons[0].onClick([]()     { Serial.println("A"); });
+    buttons[1].onClick([]()     { Serial.println("B"); });
+    buttons[2].onLongPress([]() { Serial.println("C long"); });
+}
+
+void loop() {
+    for (auto&amp; b : buttons) b.update();
+}</code></pre></div>
+</div>
 </section>
 
 <!-- ================================================================ -->
@@ -629,41 +723,43 @@ Auto-repeat    pressionou ─[600ms]─ autoRepetiu ─[150ms]─ autoRepetiu �
 <!-- ================================================================ -->
 <section id="api">
   <h2><span class="pt">Referência completa da API</span><span class="en">Full API reference</span></h2>
-  <p class="pt">Todos os métodos da classe <code>Botao</code>. A coluna "inglês" ajuda quem lê a documentação em inglês.</p>
-  <p class="en">All methods of the <code>Botao</code> class (Portuguese for "button"). The "English" column is a glossary for the Portuguese names.</p>
+  <p class="pt">Todos os métodos da classe <code>Botao</code> (ou <code>Button</code>). Os nomes das duas colunas chamam o mesmo código e podem ser misturados.</p>
+  <p class="en">All methods of the <code>Button</code> class (also available as <code>Botao</code>, Portuguese for "button"). Names in both columns call the same code and can be mixed.</p>
   <div class="tbl"><table>
-    <tr><th><span class="pt">Método</span><span class="en">Method</span></th><th><span class="pt">Inglês</span><span class="en">English</span></th><th><span class="pt">Descrição</span><span class="en">Description</span></th></tr>
-    <tr><td><code>Botao(pino, modoPino, nivelAtivo)</code></td><td>Button(pin, pinMode, activeLevel)</td><td><span class="pt">Construtor</span><span class="en">Constructor</span></td></tr>
-    <tr><td><code>iniciar()</code></td><td>begin</td><td><span class="pt">Configura o pino. Chamar no <code>setup()</code></span><span class="en">Sets up the pin. Call in <code>setup()</code></span></td></tr>
-    <tr><td><code>atualizar()</code></td><td>update</td><td><span class="pt">Lê, filtra e processa eventos. Em todo <code>loop()</code></span><span class="en">Reads, filters and processes events. On every <code>loop()</code></span></td></tr>
-    <tr><td><code>intervaloDebounce(ms)</code></td><td>debounce interval</td><td>25 ms</td></tr>
-    <tr><td><code>modoDebounce(modo)</code></td><td>debounce mode</td><td><code>ESTAVEL</code> (stable) / <code>IMEDIATO</code> (immediate)</td></tr>
-    <tr><td><code>intervaloCliqueDuplo(ms)</code></td><td>double-click interval</td><td>400 ms</td></tr>
-    <tr><td><code>habilitarCliqueDuplo(bool)</code></td><td>enable double click</td><td><code>true</code></td></tr>
-    <tr><td><code>tempoCliqueLongo(ms)</code></td><td>long-click time</td><td>800 ms</td></tr>
-    <tr><td><code>configurarAutoRepeat(delay, intervalo)</code></td><td>configure auto-repeat</td><td>600 / 150 ms</td></tr>
-    <tr><td><code>desabilitarAutoRepeat()</code></td><td>disable auto-repeat</td><td>—</td></tr>
-    <tr><td><code>aoPressionar(cb)</code></td><td>on press</td><td>callback</td></tr>
-    <tr><td><code>aoSoltar(cb)</code></td><td>on release</td><td>callback</td></tr>
-    <tr><td><code>aoClicar(cb)</code></td><td>on click</td><td>callback</td></tr>
-    <tr><td><code>aoClicarDuplo(cb)</code></td><td>on double click</td><td>callback</td></tr>
-    <tr><td><code>aoSegurar(cb)</code></td><td>on hold</td><td>callback</td></tr>
-    <tr><td><code>aoSoltarLongo(cb)</code></td><td>on long release</td><td>callback</td></tr>
-    <tr><td><code>aoAutoRepeat(cb)</code></td><td>on auto-repeat</td><td>callback</td></tr>
-    <tr><td><code>pressionou()</code></td><td>pressed</td><td><code>bool</code>, <span class="pt">uma vez</span><span class="en">once</span></td></tr>
-    <tr><td><code>soltou()</code></td><td>released</td><td><code>bool</code>, <span class="pt">uma vez</span><span class="en">once</span></td></tr>
-    <tr><td><code>clicou()</code></td><td>clicked</td><td><code>bool</code>, <span class="pt">uma vez</span><span class="en">once</span></td></tr>
-    <tr><td><code>clicouDuplo()</code></td><td>double-clicked</td><td><code>bool</code>, <span class="pt">uma vez</span><span class="en">once</span></td></tr>
-    <tr><td><code>segurou()</code></td><td>held</td><td><code>bool</code>, <span class="pt">uma vez</span><span class="en">once</span></td></tr>
-    <tr><td><code>soltouLongo()</code></td><td>long-released</td><td><code>bool</code>, <span class="pt">uma vez</span><span class="en">once</span></td></tr>
-    <tr><td><code>autoRepetiu()</code></td><td>auto-repeated</td><td><code>bool</code>, <span class="pt">uma vez</span><span class="en">once</span></td></tr>
-    <tr><td><code>estaPressionado()</code></td><td>is pressed</td><td><code>bool</code></td></tr>
-    <tr><td><code>mudouEstado()</code></td><td>state changed</td><td><code>bool</code></td></tr>
-    <tr><td><code>tempoNoEstadoAtual()</code></td><td>time in current state</td><td><code>uint32_t</code> ms</td></tr>
-    <tr><td><code>tempoNoEstadoAnterior()</code></td><td>time in previous state</td><td><code>uint32_t</code> ms</td></tr>
-    <tr><td><code>totalCliques()</code></td><td>total clicks</td><td><code>uint32_t</code></td></tr>
-    <tr><td><code>zerarContador()</code></td><td>reset counter</td><td>—</td></tr>
-    <tr><td><code>lerPino()</code></td><td>read pin (raw)</td><td><code>bool</code></td></tr>
+    <tr><th>PT</th><th>EN</th><th><span class="pt">Descrição</span><span class="en">Description</span></th></tr>
+    <tr><td><code>Botao(pino, modoPino, nivelAtivo)</code></td><td><code>Button(pin, pinMode, activeLevel)</code></td><td><span class="pt">Construtor</span><span class="en">Constructor</span></td></tr>
+    <tr><td><code>iniciar()</code></td><td><code>begin()</code></td><td><span class="pt">Configura o pino. Chamar no <code>setup()</code></span><span class="en">Sets up the pin. Call in <code>setup()</code></span></td></tr>
+    <tr><td><code>atualizar()</code></td><td><code>update()</code></td><td><span class="pt">Lê, filtra e processa eventos. Em todo <code>loop()</code></span><span class="en">Reads, filters and processes events. On every <code>loop()</code></span></td></tr>
+    <tr><td><code>intervaloDebounce(ms)</code></td><td><code>setDebounceTime(ms)</code></td><td><span class="pt">Padrão 25 ms</span><span class="en">Default 25 ms</span></td></tr>
+    <tr><td><code>modoDebounce(modo)</code></td><td><code>setDebounceMode(mode)</code></td><td><span class="pt"><code>ESTAVEL</code> / <code>IMEDIATO</code></span><span class="en"><code>STABLE</code> / <code>IMMEDIATE</code></span></td></tr>
+    <tr><td><code>intervaloCliqueDuplo(ms)</code></td><td><code>setDoubleClickTime(ms)</code></td><td><span class="pt">Padrão 400 ms</span><span class="en">Default 400 ms</span></td></tr>
+    <tr><td><code>habilitarCliqueDuplo(bool)</code></td><td><code>enableDoubleClick(bool)</code></td><td><span class="pt">Padrão <code>true</code></span><span class="en">Default <code>true</code></span></td></tr>
+    <tr><td><code>tempoCliqueLongo(ms)</code></td><td><code>setLongPressTime(ms)</code></td><td><span class="pt">Padrão 800 ms</span><span class="en">Default 800 ms</span></td></tr>
+    <tr><td><code>configurarAutoRepeat(delay, intervalo)</code></td><td><code>setAutoRepeat(delay, interval)</code></td><td><span class="pt">Padrão 600 / 150 ms</span><span class="en">Default 600 / 150 ms</span></td></tr>
+    <tr><td><code>desabilitarAutoRepeat()</code></td><td><code>disableAutoRepeat()</code></td><td><span class="pt">—</span><span class="en">—</span></td></tr>
+    <tr><td><code>aoPressionar(cb)</code></td><td><code>onPress(cb)</code></td><td><span class="pt">Callback</span><span class="en">Callback</span></td></tr>
+    <tr><td><code>aoSoltar(cb)</code></td><td><code>onRelease(cb)</code></td><td><span class="pt">Callback</span><span class="en">Callback</span></td></tr>
+    <tr><td><code>aoClicar(cb)</code></td><td><code>onClick(cb)</code></td><td><span class="pt">Callback</span><span class="en">Callback</span></td></tr>
+    <tr><td><code>aoClicarDuplo(cb)</code></td><td><code>onDoubleClick(cb)</code></td><td><span class="pt">Callback</span><span class="en">Callback</span></td></tr>
+    <tr><td><code>aoSegurar(cb)</code></td><td><code>onLongPress(cb)</code></td><td><span class="pt">Callback</span><span class="en">Callback</span></td></tr>
+    <tr><td><code>aoSoltarLongo(cb)</code></td><td><code>onLongRelease(cb)</code></td><td><span class="pt">Callback</span><span class="en">Callback</span></td></tr>
+    <tr><td><code>aoAutoRepeat(cb)</code></td><td><code>onAutoRepeat(cb)</code></td><td><span class="pt">Callback (também habilita o auto-repeat)</span><span class="en">Callback (also enables auto-repeat)</span></td></tr>
+    <tr><td><code>pressionou()</code></td><td><code>pressed()</code></td><td><span class="pt"><code>bool</code>, uma vez</span><span class="en"><code>bool</code>, once</span></td></tr>
+    <tr><td><code>soltou()</code></td><td><code>released()</code></td><td><span class="pt"><code>bool</code>, uma vez</span><span class="en"><code>bool</code>, once</span></td></tr>
+    <tr><td><code>clicou()</code></td><td><code>clicked()</code></td><td><span class="pt"><code>bool</code>, uma vez</span><span class="en"><code>bool</code>, once</span></td></tr>
+    <tr><td><code>clicouDuplo()</code></td><td><code>doubleClicked()</code></td><td><span class="pt"><code>bool</code>, uma vez</span><span class="en"><code>bool</code>, once</span></td></tr>
+    <tr><td><code>segurou()</code></td><td><code>longPressed()</code></td><td><span class="pt"><code>bool</code>, uma vez</span><span class="en"><code>bool</code>, once</span></td></tr>
+    <tr><td><code>soltouLongo()</code></td><td><code>longReleased()</code></td><td><span class="pt"><code>bool</code>, uma vez</span><span class="en"><code>bool</code>, once</span></td></tr>
+    <tr><td><code>autoRepetiu()</code></td><td><code>autoRepeated()</code></td><td><span class="pt"><code>bool</code>, uma vez</span><span class="en"><code>bool</code>, once</span></td></tr>
+    <tr><td><code>estaPressionado()</code></td><td><code>isPressed()</code></td><td><span class="pt"><code>bool</code></span><span class="en"><code>bool</code></span></td></tr>
+    <tr><td><code>mudouEstado()</code></td><td><code>stateChanged()</code></td><td><span class="pt"><code>bool</code></span><span class="en"><code>bool</code></span></td></tr>
+    <tr><td><code>tempoNoEstadoAtual()</code></td><td><code>currentStateDuration()</code></td><td><span class="pt"><code>uint32_t</code> ms</span><span class="en"><code>uint32_t</code> ms</span></td></tr>
+    <tr><td><code>tempoNoEstadoAnterior()</code></td><td><code>previousStateDuration()</code></td><td><span class="pt"><code>uint32_t</code> ms</span><span class="en"><code>uint32_t</code> ms</span></td></tr>
+    <tr><td><code>totalCliques()</code></td><td><code>clickCount()</code></td><td><span class="pt"><code>uint32_t</code></span><span class="en"><code>uint32_t</code></span></td></tr>
+    <tr><td><code>zerarContador()</code></td><td><code>resetClickCount()</code></td><td><span class="pt">—</span><span class="en">—</span></td></tr>
+    <tr><td><code>lerPino()</code></td><td><code>readPin()</code></td><td><span class="pt"><code>bool</code> (sem debounce)</span><span class="en"><code>bool</code> (no debounce)</span></td></tr>
+    <tr><td><code>ModoDebounce</code></td><td><code>DebounceMode</code></td><td>enum</td></tr>
+    <tr><td><code>CallbackBotao</code></td><td><code>ButtonCallback</code></td><td><span class="pt">Tipo do callback</span><span class="en">Callback type</span></td></tr>
   </table></div>
 </section>
 
@@ -676,6 +772,7 @@ Auto-repeat    pressionou ─[600ms]─ autoRepetiu ─[150ms]─ autoRepetiu �
     <tr><td><code>02_Callbacks</code></td><td><span class="pt">Todos os callbacks + auto-repeat</span><span class="en">All callbacks + auto-repeat</span></td></tr>
     <tr><td><code>03_GestosAvancados</code></td><td><span class="pt">Controle de um valor com gestos e tempo</span><span class="en">Controlling a value with gestures and timing</span></td></tr>
     <tr><td><code>04_MultiplosBotoes</code></td><td><span class="pt">Três botões independentes com callbacks</span><span class="en">Three independent buttons with callbacks</span></td></tr>
+    <tr><td><code>05_EnglishAPI</code></td><td><span class="pt">Exemplo completo usando os nomes em inglês</span><span class="en">Full example using the English names</span></td></tr>
   </table></div>
   <p class="pt">No PlatformIO, os exemplos ficam em <code>.pio/libdeps/&lt;env&gt;/Botao/examples/</code>. No Arduino IDE: <em>Arquivo → Exemplos → Botao</em>.</p>
   <p class="en">In PlatformIO, examples live in <code>.pio/libdeps/&lt;env&gt;/Botao/examples/</code>. In the Arduino IDE: <em>File → Examples → Botao</em>.</p>
@@ -686,16 +783,16 @@ Auto-repeat    pressionou ─[600ms]─ autoRepetiu ─[150ms]─ autoRepetiu �
   <h2><span class="pt">Solução de problemas</span><span class="en">Troubleshooting</span></h2>
   <details><summary><span class="pt">Preciso segurar o botão muito tempo para ele responder</span><span class="en">I have to hold the button a long time before it responds</span></summary>
     <ul class="pt"><li>Use a versão 1.1 ou superior: o debounce antigo reiniciava a cada glitch de ruído.</li><li>Tire os <code>delay()</code> do <code>loop()</code> e chame <code>atualizar()</code> o mais frequentemente possível.</li><li>Se você usa <code>clicou()</code>, lembre da espera do clique duplo (veja <a href="#configuracao">Configuração</a>).</li></ul>
-    <ul class="en"><li>Use version 1.1 or later: the old debounce restarted on every noise glitch.</li><li>Remove <code>delay()</code> from <code>loop()</code> and call <code>atualizar()</code> as often as possible.</li><li>If you use <code>clicou()</code>, remember the double-click wait (see <a href="#configuracao">Configuration</a>).</li></ul></details>
+    <ul class="en"><li>Use version 1.1 or later: the old debounce restarted on every noise glitch.</li><li>Remove <code>delay()</code> from <code>loop()</code> and call <code>update()</code> as often as possible.</li><li>If you use <code>clicked()</code>, remember the double-click wait (see <a href="#configuracao">Configuration</a>).</li></ul></details>
   <details><summary><span class="pt">Cliques falsos ou fantasmas</span><span class="en">False or ghost clicks</span></summary>
     <ul class="pt"><li>Use o modo <code>ESTAVEL</code> (padrão). O <code>IMEDIATO</code> não filtra ruído.</li><li>Aumente <code>intervaloDebounce</code> (ex.: 40–50 ms).</li><li>No hardware: o pull-up interno do ESP32 é fraco (~45 kΩ). Com fios longos ou cargas por perto, use um <strong>pull-up externo de 10 kΩ</strong> e um <strong>capacitor de 100 nF</strong> entre o pino e o GND.</li></ul>
-    <ul class="en"><li>Use <code>ESTAVEL</code> mode (default). <code>IMEDIATO</code> does not filter noise.</li><li>Increase <code>intervaloDebounce</code> (e.g. 40–50 ms).</li><li>Hardware: the ESP32 internal pull-up is weak (~45 kΩ). With long wires or nearby loads, add an <strong>external 10 kΩ pull-up</strong> and a <strong>100 nF capacitor</strong> between the pin and GND.</li></ul></details>
-  <details><summary><span class="pt"><code>pressionou()</code> dispara ao soltar</span><span class="en"><code>pressionou()</code> fires on release</span></summary>
+    <ul class="en"><li>Use <code>STABLE</code> mode (default). <code>IMMEDIATE</code> does not filter noise.</li><li>Increase the debounce time with <code>setDebounceTime()</code> (e.g. 40–50 ms).</li><li>Hardware: the ESP32 internal pull-up is weak (~45 kΩ). With long wires or nearby loads, add an <strong>external 10 kΩ pull-up</strong> and a <strong>100 nF capacitor</strong> between the pin and GND.</li></ul></details>
+  <details><summary><span class="pt"><code>pressionou()</code> dispara ao soltar</span><span class="en"><code>pressed()</code> fires on release</span></summary>
     <p class="pt">O <code>nivelAtivo</code> do construtor não corresponde à ligação. Veja <a href="#ligacao">Ligação e construtor</a>.</p>
-    <p class="en">The constructor's <code>nivelAtivo</code> does not match the wiring. See <a href="#ligacao">Wiring &amp; constructor</a>.</p></details>
+    <p class="en">The constructor's <code>activeLevel</code> does not match the wiring. See <a href="#ligacao">Wiring &amp; constructor</a>.</p></details>
   <details><summary><span class="pt">Um evento aparece duas vezes (ou nunca)</span><span class="en">An event shows up twice (or never)</span></summary>
     <p class="pt"><code>atualizar()</code> está sendo chamado mais de uma vez por ciclo, ou o mesmo evento é lido em dois lugares. Cada aviso é consumido na primeira leitura.</p>
-    <p class="en"><code>atualizar()</code> is called more than once per pass, or the same event is read in two places. Each flag is consumed on the first read.</p></details>
+    <p class="en"><code>update()</code> is called more than once per pass, or the same event is read in two places. Each flag is consumed on the first read.</p></details>
   <details><summary><span class="pt">Erro de compilação com lambda <code>[this]</code> no Arduino Uno</span><span class="en">Compile error with a <code>[this]</code> lambda on Arduino Uno</span></summary>
     <p class="pt">No AVR o callback é um ponteiro de função e não aceita lambdas com captura. Use uma função comum ou uma lambda sem captura.</p>
     <p class="en">On AVR the callback is a function pointer and cannot hold capturing lambdas. Use a plain function or a non-capturing lambda.</p></details>
@@ -704,6 +801,17 @@ Auto-repeat    pressionou ─[600ms]─ autoRepetiu ─[150ms]─ autoRepetiu �
 <!-- ================================================================ -->
 <section id="versoes">
   <h2><span class="pt">Histórico de versões</span><span class="en">Changelog</span></h2>
+  <h3>1.3.0</h3>
+  <ul class="pt">
+    <li><strong>API em inglês:</strong> classe <code>Button</code> e todos os métodos com nome em inglês (<code>begin</code>, <code>update</code>, <code>onClick</code>, <code>clicked</code>...). Os nomes em português continuam iguais.</li>
+    <li><code>DebounceMode::STABLE</code> / <code>IMMEDIATE</code> e <code>ButtonCallback</code>.</li>
+    <li>Novo exemplo <code>05_EnglishAPI</code> e documentação em português e inglês.</li>
+  </ul>
+  <ul class="en">
+    <li><strong>English API:</strong> <code>Button</code> class and English names for every method (<code>begin</code>, <code>update</code>, <code>onClick</code>, <code>clicked</code>...). Portuguese names are unchanged.</li>
+    <li><code>DebounceMode::STABLE</code> / <code>IMMEDIATE</code> and <code>ButtonCallback</code>.</li>
+    <li>New <code>05_EnglishAPI</code> example and Portuguese/English documentation.</li>
+  </ul>
   <h3>1.1.0</h3>
   <ul class="pt">
     <li><strong>Debounce reescrito (integrador):</strong> glitches de ruído não reiniciam mais a contagem, e o botão responde mesmo com <code>loop()</code> lento.</li>
