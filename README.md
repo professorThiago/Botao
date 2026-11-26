@@ -5,6 +5,8 @@ Biblioteca Arduino/ESP32 para leitura de botões com **debounce resistente a ru�
 ![PlatformIO Registry](https://badges.registry.platformio.org/packages/professorthiago/library/Botao.svg)
 ![Licença MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-blue.svg)
 
+> 📖 **Documentação completa / Full documentation (PT/EN):** https://professorthiago.github.io/Botao/
+>
 > Autor: [professorThiago](https://github.com/professorThiago)
 
 ```cpp
@@ -69,7 +71,7 @@ void loop() { btn.atualizar(); }
 ```ini
 ; platformio.ini
 lib_deps =
-    professorthiago/Botao@^1.1.0
+    professorthiago/Botao@^1.2.0
 ```
 
 Ou direto do GitHub:

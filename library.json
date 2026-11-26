@@ -12,6 +12,7 @@
     "esp32",
     "arduino"
   ],
+  "homepage": "https://professorthiago.github.io/Botao/",
   "repository": {
     "type": "git",
     "url": "https://github.com/professorThiago/Botao.git"
@@ -31,7 +32,10 @@
   "export": {
     "include": [
       "src",
-      "examples"
+      "examples",
+      "README.md",
+      "LICENSE",
+      "library.json"
     ]
   }
 }
